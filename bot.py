@@ -5,18 +5,15 @@ import os
 import nest_asyncio  # 🔹 SOLUCIÓN para MacOS
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
+from dotenv import load_dotenv
 
 nest_asyncio.apply()
-CHAT_ID = "1117095261"  # ID del chat donde enviará las alertas
+load_dotenv()
 
-# 🔹 Puerto para el servidor web
-PORT = int(os.environ.get("PORT", 8080))  # Usa el puerto de Render o 8080 por defecto
-
-# 🔹 TOKEN de tu bot de Telegram
-TOKEN = "7846162619:AAH6NWIhnJ95uGjAABT1Y3z-0iK_t-ZoDaY"
-
-# 🔹 URL de la API del exchange (ajústala según tu proveedor)
-API_URL = "https://v6.exchangerate-api.com/v6/be19caf6019774a23fc2850b/latest/USD" 
+CHAT_ID = os.getenv("CHAT_ID")
+PORT = int(os.getenv("PORT", 8080))  # Si PORT no está definido, usa 8080 por defecto
+TOKEN = os.getenv("TOKEN")
+API_URL = os.getenv("API_URL")
 
 ALERTA_PRECIO = 4200  # Valor de la alerta por defecto
 
