@@ -122,7 +122,7 @@ Thread(target=keep_alive).start()
 
 
 # 🔹 FUNCIÓN PRINCIPAL
-async def main():
+def main():
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))  # 🔹 Mensaje de bienvenida
     app.add_handler(CommandHandler("precio", precio))
@@ -132,10 +132,7 @@ async def main():
 
     print("🤖 Bot iniciado... Monitoreando el dólar 💰")
     asyncio.create_task(monitorear_precio(app))  # 🔄 Activar monitoreo automático
-    await app.run_polling()
+    app.run_polling()
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())  # ✅ Usa `asyncio.run()` sin `loop.close()`
-    except RuntimeError:
-        pass  # 🔹 Evita el error de "Cannot close a running event loop"
+    main()
