@@ -140,4 +140,6 @@ async def main():
         await app.run_polling()
 
 if __name__ == "__main__":
-    asyncio.run(main())  # ✅ Ahora todo se ejecuta dentro de un loop asyncio
+    loop = asyncio.new_event_loop()  # 🔄 Crear un nuevo event loop manualmente
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(main())
