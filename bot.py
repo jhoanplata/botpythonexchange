@@ -131,9 +131,13 @@ async def main():
     app.add_handler(CommandHandler("ayuda", ayuda))
 
     print("🤖 Bot iniciado... Monitoreando el dólar 💰")
-    
+    app = Application.builder().token(TOKEN).build()
+
     asyncio.create_task(monitorear_precio(app))  # 🔄 Activar monitoreo automático
     await app.run_polling()
 
 if __name__ == "__main__":
-    asyncio.run(main())  # ✅ Funciona sin errores en MacOS
+    try:
+        asyncio.get_event_loop().run_until_complete(main())  # ✅ Corrección para Render
+    except RuntimeError:
+        pass  # 🔹 Evita el error de "Cannot close a running event loop"
