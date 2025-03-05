@@ -122,20 +122,21 @@ Thread(target=keep_alive).start()
 
 
 # 🔹 FUNCIÓN PRINCIPAL
-def main():
+async def main():
     app = Application.builder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))  # 🔹 Mensaje de bienvenida
+    
+    app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("precio", precio))
     app.add_handler(CommandHandler("alerta", alerta))
     app.add_handler(CommandHandler("convertir", convertir))
     app.add_handler(CommandHandler("ayuda", ayuda))
 
     print("🤖 Bot iniciado... Monitoreando el dólar 💰")
-    
-    # ✅ Usa el loop interno del bot en lugar de `asyncio.create_task()`
-    app.create_task(monitorear_precio(app))  
 
-    app.run_polling()
+    # 🔹 Iniciar monitoreo en segundo plano después de `run_polling()`
+    async with app:
+        app.create_task(monitorear_precio(app))
+        await app.run_polling()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())  # ✅ Ahora todo se ejecuta dentro de un loop asyncio
