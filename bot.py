@@ -9,6 +9,7 @@ from telegram.ext import Application, CommandHandler, CallbackContext
 nest_asyncio.apply()
 CHAT_ID = "1117095261"  # ID del chat donde enviará las alertas
 
+# 🔹 Puerto para el servidor web
 PORT = int(os.environ.get("PORT", 8080))  # Usa el puerto de Render o 8080 por defecto
 
 # 🔹 TOKEN de tu bot de Telegram
