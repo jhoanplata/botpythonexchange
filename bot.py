@@ -1,5 +1,7 @@
 import requests
 import asyncio
+import time
+import os
 import nest_asyncio  # 🔹 SOLUCIÓN para MacOS
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
@@ -7,6 +9,7 @@ from telegram.ext import Application, CommandHandler, CallbackContext
 nest_asyncio.apply()
 CHAT_ID = "1117095261"  # ID del chat donde enviará las alertas
 
+PORT = int(os.environ.get("PORT", 8080))  # Usa el puerto de Render o 8080 por defecto
 
 # 🔹 TOKEN de tu bot de Telegram
 TOKEN = "7846162619:AAH6NWIhnJ95uGjAABT1Y3z-0iK_t-ZoDaY"
@@ -108,6 +111,14 @@ async def start(update: Update, context: CallbackContext) -> None:
     )
     
     await update.message.reply_text(mensaje, parse_mode="Markdown")
+
+def keep_alive():
+    while True:
+        requests.get("https://botpythonexchangepython3-bot-py.onrender.com")
+        time.sleep(600)  # Pingea cada 10 minutos
+
+from threading import Thread
+Thread(target=keep_alive).start()
 
 
 # 🔹 FUNCIÓN PRINCIPAL
