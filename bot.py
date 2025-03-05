@@ -131,7 +131,10 @@ def main():
     app.add_handler(CommandHandler("ayuda", ayuda))
 
     print("🤖 Bot iniciado... Monitoreando el dólar 💰")
-    asyncio.create_task(monitorear_precio(app))  # 🔄 Activar monitoreo automático
+    
+    # ✅ Usa el loop interno del bot en lugar de `asyncio.create_task()`
+    app.create_task(monitorear_precio(app))  
+
     app.run_polling()
 
 if __name__ == "__main__":
