@@ -1,12 +1,14 @@
 import requests
 import asyncio
-import time
 import os
 import nest_asyncio  # 🔹 SOLUCIÓN para MacOS
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
 from dotenv import load_dotenv
+from flask import Flask
+import threading
 
+# 🔹 Cargar variables de entorno desde .env
 nest_asyncio.apply()
 load_dotenv()
 
@@ -16,6 +18,20 @@ TOKEN = os.getenv("TOKEN")
 API_URL = os.getenv("API_URL")
 
 ALERTA_PRECIO = 4200  # Valor de la alerta por defecto
+
+# 🔹 Iniciar servidor Flask para evitar suspensión en Render
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "🤖 Bot del Dólar está activo"
+
+def run_flask():
+    app.run(host="0.0.0.0", port=PORT)  # Usamos el puerto 8080
+
+# Iniciar Flask en un hilo separado
+flask_thread = threading.Thread(target=run_flask)
+flask_thread.start()
 
 # 🔹 FUNCIÓN PARA OBTENER EL PRECIO
 async def obtener_precio():
@@ -70,16 +86,15 @@ async def convertir(update: Update, context: CallbackContext) -> None:
         mensaje = "⚠️ Debes indicar un valor numérico para convertir."
     
     await update.message.reply_text(mensaje)
-    
-# 🔹 COMANDO /AYUDA
 
+# 🔹 COMANDO /AYUDA
 async def ayuda(update: Update, context: CallbackContext) -> None:
     mensaje = (
         "👋 ¡Hola! Bienvenido al *Bot del Dólar* 💰.\n\n"
         "Aquí tienes mayor información de los comandos:\n"
         "📌 /precio - Ver la cotización actual del dólar\n"
-        "🚨 /alerta - Allí debes digitar el valor que deseas configurar como alerta después del comando(Ejm: /alerta 4200 *Enviar \n"
-        "🔄 /convertir USD a COP - Allí debes digitar el valora convertir después del comando(Ejm: /convertir 100 *Enviar \n"
+        "🚨 /alerta - Allí debes digitar el valor que deseas configurar como alerta después del comando (Ej: /alerta 4200)\n"
+        "🔄 /convertir USD a COP - Allí debes digitar el valor a convertir después del comando (Ej: /convertir 100)\n"
         "Escribe un comando para comenzar 👇"
     )
     
@@ -96,6 +111,7 @@ async def monitorear_precio(app: Application):
 
         await asyncio.sleep(3600)  # 🔄 Verifica cada 1 hora
 
+# 🔹 COMANDO /START
 async def start(update: Update, context: CallbackContext) -> None:
     """Responde con un saludo y muestra las opciones disponibles."""
     mensaje = (
@@ -103,21 +119,12 @@ async def start(update: Update, context: CallbackContext) -> None:
         "Aquí tienes las opciones disponibles:\n"
         "📌 /precio - Ver la cotización actual del dólar\n"
         "🚨 /alerta - Configurar alerta cuando el dólar supere un valor\n"
-        "🔄 /convertir USD a COP - Digite el número despues del comando\n"
+        "🔄 /convertir USD a COP - Digite el número después del comando\n"
         "ℹ️ /ayuda - Mostrar esta información nuevamente\n\n"
         "Escribe un comando para comenzar 👇"
     )
     
     await update.message.reply_text(mensaje, parse_mode="Markdown")
-
-def keep_alive():
-    while True:
-        requests.get("https://botpythonexchangepython3-bot-py.onrender.com")
-        time.sleep(600)  # Pingea cada 10 minutos
-
-from threading import Thread
-Thread(target=keep_alive).start()
-
 
 # 🔹 FUNCIÓN PRINCIPAL
 async def main():
