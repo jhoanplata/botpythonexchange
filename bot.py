@@ -30,7 +30,7 @@ def run_flask():
     app.run(host="0.0.0.0", port=PORT)  # Usamos el puerto 8080
 
 # Iniciar Flask en un hilo separado
-flask_thread = threading.Thread(target=run_flask)
+flask_thread = threading.Thread(target=run_flask, daemon=True)  # 🔹 Hilo como daemon
 flask_thread.start()
 
 # 🔹 FUNCIÓN PARA OBTENER EL PRECIO
@@ -140,10 +140,8 @@ async def main():
 
     # 🔹 Iniciar monitoreo en segundo plano después de `run_polling()`
     async with app:
-        app.create_task(monitorear_precio(app))
+        asyncio.create_task(monitorear_precio(app))  # 🔹 Tarea en segundo plano
         await app.run_polling()
 
 if __name__ == "__main__":
-    loop = asyncio.new_event_loop()  # 🔄 Crear un nuevo event loop manualmente
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(main())
+    asyncio.run(main())  # 🔹 Usa asyncio.run() para evitar problemas de event loop
