@@ -13,7 +13,7 @@ nest_asyncio.apply()
 load_dotenv()
 
 CHAT_ID = os.getenv("CHAT_ID")
-PORT = int(os.getenv("PORT", 8080))  # Si PORT no está definido, usa 8080 por defecto
+PORT = int(os.getenv("PORT", 5000))  # Si PORT no está definido, usa 8080 por defecto
 TOKEN = os.getenv("TOKEN")
 API_URL = os.getenv("API_URL")
 
